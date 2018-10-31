@@ -15,7 +15,9 @@ map_forest = [ 0    0   0.6;
                1.0  0   0;
                0    0   0];
 
-
+%For plotting trees burned
+X = zeros;
+Y = zeros;
 
 % world starts with trees and at the standard temperature everywhere
 world_tree = forest_create(sz(1), sz(2), 0.9);
@@ -27,9 +29,11 @@ world_tree = fire_start(world_tree);
 for i=1:250
     world_temp = temperature_step(world_temp, world_tree, 2);
     world_tree =fire_step(world_tree);
+    X(i)= TreesBurned(world_tree);
+    Y(i) =i;
     
     % view the tree world
-    ax1 = subplot(1,2,1);
+    ax1 = subplot(1,3,1);
     imagesc(world_tree);
     title(ax1, 'forest state')
     % keep colors ranging from 0 to 3
@@ -41,12 +45,21 @@ for i=1:250
     title(cbh1, 'state')
     
     % view the temperature world
-    ax2 = subplot(1,2,2);
+    ax2 = subplot(1,3,2);
     imagesc(world_temp);
     title(ax2, 'forest temperature')
     caxis(ax2, [0 400]);
     colormap(gca, jet(64));
     cbh2 = colorbar;
     title(cbh2, 'temperature[ºC]')
+
+    
+    % graph of the number burned trees
+    ax3 = subplot(1,3,3);
+    title(ax3, 'forest burned')
+    axis([0 250 0 8000]);
+    plot(Y,X);hold on
+    xlabel('ticks');
+    ylabel('Trees burned');
     drawnow;
 end
