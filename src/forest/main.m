@@ -1,3 +1,5 @@
+% reset
+close all ; clear ; clc ;
 % world size
 sz = [150 150];
 
