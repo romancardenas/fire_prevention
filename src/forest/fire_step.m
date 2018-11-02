@@ -1,11 +1,7 @@
 
-function new_world = fire_step(world)
+function new_world = fire_step(world, extend_fire, stop_fire)
 %FIRE_STEP Summary of this function goes here
 %   Detailed explanation goes here
-
-% probabilities
-extend_fire = 0.1; % tree -> fire (due to neighbours)
-stop_fire   = 0.05; % fire -> empty (no more wood to get burned)
 
 % tree states
 EMPTY       = 0;

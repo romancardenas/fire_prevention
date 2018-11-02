@@ -1,4 +1,4 @@
-function new_world = fire_start(world)
+function new_world = fire_start(world, n_fires)
 %FIRE_SPARK Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -10,13 +10,15 @@ BURNED      = 3;
 
 [m, n] = size(world);
 coor = zeros(1, 2);
-while 1
-    coor = round(rand(1, 2) .* [m n]);
-    if world(coor(1), coor(2)) == TREE
-        break
-    end
-end
 new_world = world;
-new_world(coor(1), coor(2)) = BURNING;
+for i = 1:n_fires
+    while 1
+        coor = round(rand(1, 2) .* [m n]);
+        if world(coor(1), coor(2)) == TREE
+            break
+        end
+    end
+    new_world(coor(1), coor(2)) = BURNING;
+end
 end
 
