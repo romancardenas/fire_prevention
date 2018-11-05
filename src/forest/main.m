@@ -1,5 +1,7 @@
 % reset
 close all ; clear ; clc ;
+% we add a path to the sensor classes 
+addpath('./sensorArray')
 
 % simulation parameters
 SZ = [150 150];  % world size
@@ -8,6 +10,7 @@ FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 2;  % Number of fire
 T_FIRE  = 30;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
+NR_SENSOR = 10 ; % number of sensors
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)
 P_STOP_FIRE   = 0.05; % fire -> empty (no more wood to get burned)
@@ -32,15 +35,31 @@ Y = zeros;
 world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
+% create sensor array 
+dim = size(world_temp) ; 
+Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),NR_SENSOR))) ;
+Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),NR_SENSOR))) ;
+
+world_sensor = 10*[] ;
+for i = 1:NR_SENSOR
+    world_sensor = [world_sensor, sensorNetwork(Xsensor(i),Ysensor(i),IDLE_TEMP) ] ;
+end
+
 % iterate for 1440 time steps
 for i=1:250
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     X(i)= TreesBurned(world_tree);
     Y(i) =i;
+    % update temperature for sensors
+    for j = 1:NR_SENSOR 
+        Xsens = world_sensor(j).X ;
+        Ysens = world_sensor(j).Y ;
+       world_sensor(j).update(world_temp(Xsens,Ysens)) ;
+    end
     
     % view the tree world
-    ax1 = subplot(1,3,1);
+    ax1 = subplot(1,4,1);
     imagesc(world_tree);
     title(ax1, 'forest state')
     % keep colors ranging from 0 to 3
@@ -52,7 +71,7 @@ for i=1:250
     title(cbh1, 'state')
     
     % view the temperature world
-    ax2 = subplot(1,3,2);
+    ax2 = subplot(1,4,2);
     imagesc(world_temp);
     title(ax2, 'forest temperature')
     caxis(ax2, [0 400]);
@@ -61,12 +80,34 @@ for i=1:250
     title(cbh2, 'temperature[ºC]')
     
     % graph of the number burned trees
-    ax3 = subplot(1,3,3);
+    ax3 = subplot(1,4,3);
     title(ax3, 'trees burned')
     axis([0 250 0 8000]);
     plot(Y,X);hold on
     xlabel('ticks');
     ylabel('Trees burned');
+    
+    % graph of sensor data
+    ax4 = subplot(1,4,4) ;
+    title(ax4, 'sensors') 
+    plot(1,1) 
+    axis([0 dim(1) 0 dim(2)])
+    axis ij
+    set(gca,'Color','k')
+    for j =1:NR_SENSOR
+        Xsens = world_sensor(j).X ;
+        Ysens = world_sensor(j).Y ;
+        if world_sensor(j).forestState == 0
+            plot(Xsens,Ysens,'og')
+        elseif world_sensor(j).forestState == 1
+            plot(Xsens,Ysens,'oy')
+        elseif world_sensor(j).forestState == 2
+            plot(Xsens,Ysens,'or')
+        else
+            plot(Xsens,Ysens,'ow')
+        end 
+        hold on
+    end
     
     drawnow;
 end
