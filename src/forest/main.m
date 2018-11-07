@@ -2,15 +2,16 @@
 close all ; clear ; clc ;
 % we add a path to the sensor classes 
 addpath('./sensorArray')
-
+addpath('./resize') ;
 % simulation parameters
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 2;  % Number of fire
+<<<<<<< HEAD
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
-NR_SENSOR = 10 ; % number of sensors
+NR_SENSOR = 20 ; % number of sensors
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)
 P_STOP_FIRE   = 0.05; % fire -> empty (no more wood to get burned)
@@ -36,17 +37,20 @@ world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 % create sensor array 
-dim = size(world_temp) ; 
-Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),NR_SENSOR))) ;
-Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),NR_SENSOR))) ;
+dim = size(world_temp) ;
+Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),5))) ;
+Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),4))) ;
 
-world_sensor = 10*[] ;
-for i = 1:NR_SENSOR
-    world_sensor = [world_sensor, sensorNetwork(Xsensor(i),Ysensor(i),IDLE_TEMP) ] ;
+
+world_sensor = [] ;
+for row = 1:5
+    for col = 1:4
+    world_sensor = [world_sensor, sensorNetwork(Xsensor(col),Ysensor(row),IDLE_TEMP) ] ;
+    end 
 end
 
 % iterate for 1440 time steps
-for i=1:250
+for i=1:10
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     X(i)= TreesBurned(world_tree);
