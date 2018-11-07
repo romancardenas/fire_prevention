@@ -8,7 +8,6 @@ SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 2;  % Number of fire
-<<<<<<< HEAD
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 NR_SENSOR = 20 ; % number of sensors
@@ -38,28 +37,30 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 % create sensor array 
 dim = size(world_temp) ;
-Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),5))) ;
-Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),4))) ;
+Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),5))) ; % row 
+Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),4))) ; % col
 
 
-world_sensor = [] ;
+world_sensor = cell(5,4) ;
 for row = 1:5
     for col = 1:4
-    world_sensor = [world_sensor, sensorNetwork(Xsensor(col),Ysensor(row),IDLE_TEMP) ] ;
+    world_sensor{row,col} = sensorNetwork(Ysensor(row),Xsensor(col), IDLE_TEMP) ;
     end 
 end
 
 % iterate for 1440 time steps
-for i=1:10
+for i=1:300
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     X(i)= TreesBurned(world_tree);
     Y(i) =i;
     % update temperature for sensors
-    for j = 1:NR_SENSOR 
-        Xsens = world_sensor(j).X ;
-        Ysens = world_sensor(j).Y ;
-       world_sensor(j).update(world_temp(Xsens,Ysens)) ;
+    for row = 1:5 
+        for col = 1:4 
+        Xsens = world_sensor{row,col}.X ;
+        Ysens = world_sensor{row,col}.Y ;
+       world_sensor{row,col}.update(world_temp(Ysens,Xsens)) ;
+        end
     end
     figure(1)
     % view the tree world
@@ -98,18 +99,20 @@ for i=1:10
     axis([0 dim(1) 0 dim(2)])
     axis ij
     set(gca,'Color','k')
-    for j =1:NR_SENSOR
-        Xsens = world_sensor(j).X ;
-        Ysens = world_sensor(j).Y ;
-        if world_sensor(j).forestState == 0
-            plot(Xsens,Ysens,'og')
-        elseif world_sensor(j).forestState == 1
-            plot(Xsens,Ysens,'oy')
-        elseif world_sensor(j).forestState == 2
-            plot(Xsens,Ysens,'or')
-        else
-            plot(Xsens,Ysens,'ow')
-        end 
+    for row =1:5
+        for col = 1:4 
+            Xsens = world_sensor{row,col}.X ;
+            Ysens = world_sensor{row,col}.Y ;
+            if world_sensor{row,col}.forestState == 0
+                plot(Xsens,Ysens,'og')
+            elseif world_sensor{row,col}.forestState == 1
+                plot(Xsens,Ysens,'oy')
+            elseif world_sensor{row,col}.forestState == 2
+                plot(Xsens,Ysens,'or')
+            else
+                plot(Xsens,Ysens,'ow')
+            end 
+        end
         hold on
     end
     
