@@ -118,7 +118,16 @@ for i=1:300
         hold on
     end
     
+    temp_from_sensors = get_temp_from_sensors(world_sensor);
+    temp_from_sensors = temp_reconstruct(temp_from_sensors, SZ(1), SZ(2));
     
-    
+    % view the temperature world
+    ax5 = subplot(4,3,[8 11]);
+    imagesc(temp_from_sensors);
+    title(ax5, 'reconstructed temperature')
+    caxis(ax5, [0 400]);
+    colormap(gca, jet(64));
+    cbh5 = colorbar;
+    title(cbh5, 'temperature[ºC]')
     drawnow;
 end
