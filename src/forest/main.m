@@ -8,7 +8,7 @@ SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 2;  % Number of fire
-T_FIRE  = 30;  % temperature to be increased due to fire
+T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 NR_SENSOR = 10 ; % number of sensors
 % probabilities
@@ -57,9 +57,9 @@ for i=1:250
         Ysens = world_sensor(j).Y ;
        world_sensor(j).update(world_temp(Xsens,Ysens)) ;
     end
-    
+    figure(1)
     % view the tree world
-    ax1 = subplot(1,4,1);
+    ax1 = subplot(4,3,[1 4]);
     imagesc(world_tree);
     title(ax1, 'forest state')
     % keep colors ranging from 0 to 3
@@ -71,7 +71,7 @@ for i=1:250
     title(cbh1, 'state')
     
     % view the temperature world
-    ax2 = subplot(1,4,2);
+    ax2 = subplot(4,3,[2 5]);
     imagesc(world_temp);
     title(ax2, 'forest temperature')
     caxis(ax2, [0 400]);
@@ -80,15 +80,15 @@ for i=1:250
     title(cbh2, 'temperature[ºC]')
     
     % graph of the number burned trees
-    ax3 = subplot(1,4,3);
+    ax3 = subplot(4,3,3);
     title(ax3, 'trees burned')
     axis([0 250 0 8000]);
     plot(Y,X);hold on
     xlabel('ticks');
     ylabel('Trees burned');
-    
+    %figure(2)
     % graph of sensor data
-    ax4 = subplot(1,4,4) ;
+    ax4 = subplot(4,3,[7 10]) ;
     title(ax4, 'sensors') 
     plot(1,1) 
     axis([0 dim(1) 0 dim(2)])
