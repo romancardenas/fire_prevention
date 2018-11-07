@@ -19,7 +19,7 @@ classdef sensorNetwork < handle
     end
     
     methods
-        function self = sensorNetwork(X,Y,Temp) % constructor
+        function self = sensorNetwork(Y,X,Temp) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
