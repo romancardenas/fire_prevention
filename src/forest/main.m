@@ -11,6 +11,8 @@ N_FIRES = 2;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 NR_SENSOR = 20 ; % number of sensors
+SENSOR_COST = 300; % Sensor cost in DKK
+TREE_COST = 5;  % Tree cost in DKK
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)
 P_STOP_FIRE   = 0.05; % fire -> empty (no more wood to get burned)
@@ -30,6 +32,7 @@ map_forest = [ 0    0   0.6;
 %For plotting trees burned
 X = zeros;
 Y = zeros;
+fireDetected = -1;
 
 % world starts with trees and at the standard temperature everywhere
 world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
@@ -48,12 +51,14 @@ for row = 1:5
     end 
 end
 
+looplength = 300;
 % iterate for 1440 time steps
-for i=1:300
+for i=1:looplength
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
-    X(i)= TreesBurned(world_tree);
+    XtreesBurned(i)= TreesBurned(world_tree);
     Y(i) =i;
+    Xprice(i) = NR_SENSOR * SENSOR_COST + XtreesBurned(i) * TREE_COST;
     % update temperature for sensors
     for row = 1:5 
         for col = 1:4 
@@ -87,11 +92,28 @@ for i=1:300
     % graph of the number burned trees
     ax3 = subplot(4,3,3);
     title(ax3, 'trees burned')
-    axis([0 250 0 8000]);
-    plot(Y,X);hold on
+    axis([0 looplength 0 15000]);
+    p = plot(Y,XtreesBurned);hold on
+    p(1).LineWidth = 3;
+    p(1).Color = 'k';   
     xlabel('ticks');
     ylabel('Trees burned');
     %figure(2)
+    
+    %Price
+    ax31 = subplot(4,3,6);
+    title(ax31, 'Price')
+    axis([0 looplength 0 100000]);
+    p = plot(Y,Xprice);hold on
+    p(1).LineWidth = 3;
+    p(1).Color = 'r';
+    xlabel('ticks');
+    ylabel('DKK');
+    if fireDetected ~= -1
+        v=fireDetected; % Point where you want the line
+        t = plot([v v], ylim); % Plot Vertical Line
+        t(1).Color = 'b';
+    end
     
     % graph of sensor data
     ax4 = subplot(4,3,[7 10]) ;
@@ -111,6 +133,9 @@ for i=1:300
                 plot(Xsens,Ysens,'oy')
             elseif world_sensor{row,col}.forestState == 2
                 plot(Xsens,Ysens,'or')
+                if fireDetected == -1
+                    fireDetected = i;
+                end
             else
                 plot(Xsens,Ysens,'ow')
             end 
