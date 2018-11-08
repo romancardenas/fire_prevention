@@ -8,10 +8,10 @@ SIM_LENGTH = 300;
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
-N_FIRES = 2;  % Number of fire
+N_FIRES = 1;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
-NR_SENSOR = 20 ; % number of sensors
+NR_SENSOR = 2 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)
@@ -40,34 +40,22 @@ XpriceSens = ones(1,SIM_LENGTH) ;
 world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
+
 % create sensor array 
-dim = size(world_temp) ;
-Ysensor = double(int16(linspace(dim(2)/NR_SENSOR,dim(2)-(dim(2)/NR_SENSOR),5))) ; % row 
-Xsensor = double(int16(linspace(dim(1)/NR_SENSOR,dim(1)-(dim(1)/NR_SENSOR),4))) ; % col
+world_sensor = sensor_create(SZ, NR_SENSOR, IDLE_TEMP);
+final_nsensors = numel(world_sensor);
 
+XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 
 
-world_sensor = cell(5,4) ;
-for row = 1:5
-    for col = 1:4
-    world_sensor{row,col} = sensorNetwork(Ysensor(row),Xsensor(col), IDLE_TEMP) ;
-    end 
-end
-
-XpriceSens = XpriceSens * (NR_SENSOR * world_sensor{1,1}.price) ; 
-% iterate for 1440 time steps
 for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
+    world_sensor = sensor_step(world_sensor, world_temp);
+    temp_from_sensors = get_temp_from_sensors(world_sensor);
+    temp_from_sensors = temp_reconstruct(temp_from_sensors, SZ(1), SZ(2));
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
-    % update temperature for sensors
-    for row = 1:5 
-        for col = 1:4 
-        Xsens = world_sensor{row,col}.X ;
-        Ysens = world_sensor{row,col}.Y ;
-       world_sensor{row,col}.update(world_temp(Ysens,Xsens)) ;
-        end
-    end
+  
     figure(1)
     % view the tree world
     ax1 = subplot(4,3,[1 4]);
@@ -124,13 +112,13 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     % graph of sensor data
     ax4 = subplot(4,3,[7 10]) ;
     title(ax4, 'sensors') 
-    plot(1,1) 
-    axis([0 dim(1) 0 dim(2)])
+    %plot(1,1) 
+    axis([0 SZ(1) 0 SZ(2)])
     axis ij
     set(gca,'Color','k')
-
-    for row =1:5
-        for col = 1:4 
+    [i, j] = size(world_sensor);
+    for row =1:i
+        for col = 1:j
             Xsens = world_sensor{row,col}.X ;
             Ysens = world_sensor{row,col}.Y ;
             if world_sensor{row,col}.forestState == 0
@@ -148,11 +136,8 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
         end
         hold on
     end
-    
-    temp_from_sensors = get_temp_from_sensors(world_sensor);
-    temp_from_sensors = temp_reconstruct(temp_from_sensors, SZ(1), SZ(2));
-    
-    % view the temperature world
+   
+    % view the reconstructed temperature world
     ax5 = subplot(4,3,[8 11]);
     imagesc(temp_from_sensors);
     title(ax5, 'reconstructed temperature')
