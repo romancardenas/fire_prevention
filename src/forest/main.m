@@ -4,7 +4,7 @@ close all ; clear ; clc ;
 addpath('./sensorArray')
 addpath('./resize') ;
 % simulation parameters
-SIM_LENGTH = 100;
+SIM_LENGTH = 300;
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
@@ -30,11 +30,12 @@ map_forest = [ 0    0   0.6;
                0    0   0];
 
 %For plotting trees burned
-X = zeros;
-Y = zeros(1,10);
+% X = zeros;
+Y = 1:SIM_LENGTH;
 fireDetected = -1;
 XtreesBurned = zeros(1,SIM_LENGTH ) ;
-Xprice = zeros(1,SIM_LENGTH) ;
+XpriceTree = zeros(1,SIM_LENGTH) ;
+XpriceSens = ones(1,SIM_LENGTH) ;
 % world starts with trees and at the standard temperature everywhere
 world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
@@ -52,14 +53,13 @@ for row = 1:5
     end 
 end
 
-TOTAL_SENSOR_COST = NR_SENSOR * world_sensor{1,1}.price ; 
+XpriceSens = XpriceSens * (NR_SENSOR * world_sensor{1,1}.price) ; 
 % iterate for 1440 time steps
 for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     XtreesBurned(i)= TreesBurned(world_tree);
-    Y(i) = i ;
-    Xprice(i) = TOTAL_SENSOR_COST + XtreesBurned(i) * TREE_COST;
+    XpriceTree(i) = XtreesBurned(i) * TREE_COST;
     % update temperature for sensors
     for row = 1:5 
         for col = 1:4 
@@ -105,9 +105,13 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     ax31 = subplot(4,3,6);
     title(ax31, 'Price')
     axis([0 SIM_LENGTH 0 100000]);
-    p = plot(Y(1:i),Xprice(1:i));hold on
+    p = plot(Y(1:i),XpriceTree(1:i)) ;
     p(1).LineWidth = 3;
     p(1).Color = 'r';
+    hold on
+    s = plot(Y(1:i),XpriceSens(1:i)); hold on 
+    s(1).LineWidth = 3 ;
+    s(1).Color = 'k' ;
     xlabel('ticks');
     ylabel('DKK');
     if fireDetected ~= -1
@@ -115,6 +119,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
         t = plot([v v], ylim); % Plot Vertical Line
         t(1).Color = 'b';
     end
+    legend('trees','sensors') ;
     
     % graph of sensor data
     ax4 = subplot(4,3,[7 10]) ;
