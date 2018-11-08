@@ -5,7 +5,7 @@ temp_sensors = zeros(m, n);
 %   Detailed explanation goes here
 for i = 1:m
     for j = 1:n
-        temp_sensors(i, j) = world_sensor{i, j}.tempHumdSensor.temp;
+        temp_sensors(i, j) = world_sensor{i, j}.getSensorData();
     end
 end
 end

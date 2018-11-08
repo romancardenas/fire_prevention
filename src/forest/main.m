@@ -11,7 +11,7 @@ FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 1;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
-NR_SENSOR = 2 ; % number of sensors
+NR_SENSOR = 25 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)

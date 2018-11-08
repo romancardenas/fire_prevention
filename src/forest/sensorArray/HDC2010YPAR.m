@@ -1,11 +1,12 @@
 classdef HDC2010YPAR < handle
-    %HDC2010YPAR Summary of this class goes here
-    %   Detailed explanation goes here
+    %HDC2010YPAR class is a representation of the HDC2010YPAR temp and 
+    % humidty sensor 
+    % https://www.digikey.dk/product-detail/en/texas-instruments/HDC2010YPAR/296-47774-2-ND/7561364
     
     properties (Constant)
-        Terror = 0.2
-        Herror = 2
-        price = 300 ; %totally random value
+        Terror = 0.2 
+        Herror = 2  
+        price = 8.27  % based on digikey price: unit price with bulk purchase of 3000 units
     end
     
     properties (Access = public ) 
