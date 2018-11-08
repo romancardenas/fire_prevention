@@ -26,13 +26,13 @@ classdef sensorNetwork < handle
             self.baseTemp = Temp ;
             % create instance of temp sensor
             self.tempHumdSensor = HDC2010YPAR(Temp) ;
+            % get price of sensor network
+            self.price = self.tempHumdSensor.price ; 
         end
         function update(self,Temp)
             self.tempHumdSensor.getTemp(Temp);
         end
-        function cost(self) % cost of device
-            self.price = self.tempHumdSensor.price ;
-        end
+        % add function to get sensor values
         function val = get.forestState(self) % get function, invoked before forestState is read
             temp = self.tempHumdSensor.temp ;
             if temp > 110  

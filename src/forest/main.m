@@ -4,6 +4,7 @@ close all ; clear ; clc ;
 addpath('./sensorArray')
 addpath('./resize') ;
 % simulation parameters
+SIM_LENGTH = 100;
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
@@ -11,7 +12,6 @@ N_FIRES = 2;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 NR_SENSOR = 20 ; % number of sensors
-SENSOR_COST = 300; % Sensor cost in DKK
 TREE_COST = 5;  % Tree cost in DKK
 % probabilities
 P_EXTEND_FIRE = 0.1; % tree -> fire (due to neighbours)
@@ -31,9 +31,10 @@ map_forest = [ 0    0   0.6;
 
 %For plotting trees burned
 X = zeros;
-Y = zeros;
+Y = zeros(1,10);
 fireDetected = -1;
-
+XtreesBurned = zeros(1,SIM_LENGTH ) ;
+Xprice = zeros(1,SIM_LENGTH) ;
 % world starts with trees and at the standard temperature everywhere
 world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
@@ -51,14 +52,14 @@ for row = 1:5
     end 
 end
 
-looplength = 300;
+TOTAL_SENSOR_COST = NR_SENSOR * world_sensor{1,1}.price ; 
 % iterate for 1440 time steps
-for i=1:looplength
+for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     XtreesBurned(i)= TreesBurned(world_tree);
-    Y(i) =i;
-    Xprice(i) = NR_SENSOR * SENSOR_COST + XtreesBurned(i) * TREE_COST;
+    Y(i) = i ;
+    Xprice(i) = TOTAL_SENSOR_COST + XtreesBurned(i) * TREE_COST;
     % update temperature for sensors
     for row = 1:5 
         for col = 1:4 
@@ -92,8 +93,8 @@ for i=1:looplength
     % graph of the number burned trees
     ax3 = subplot(4,3,3);
     title(ax3, 'trees burned')
-    axis([0 looplength 0 15000]);
-    p = plot(Y,XtreesBurned);hold on
+    axis([0 SIM_LENGTH 0 15000]);
+    p = plot(Y(1:i),XtreesBurned(1:i));hold on
     p(1).LineWidth = 3;
     p(1).Color = 'k';   
     xlabel('ticks');
@@ -103,8 +104,8 @@ for i=1:looplength
     %Price
     ax31 = subplot(4,3,6);
     title(ax31, 'Price')
-    axis([0 looplength 0 100000]);
-    p = plot(Y,Xprice);hold on
+    axis([0 SIM_LENGTH 0 100000]);
+    p = plot(Y(1:i),Xprice(1:i));hold on
     p(1).LineWidth = 3;
     p(1).Color = 'r';
     xlabel('ticks');

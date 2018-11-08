@@ -5,7 +5,7 @@ classdef HDC2010YPAR < handle
     properties (Constant)
         Terror = 0.2
         Herror = 2
-        price = 10 ; %totally random value
+        price = 300 ; %totally random value
     end
     
     properties (Access = public ) 
