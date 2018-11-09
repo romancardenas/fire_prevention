@@ -1,16 +1,23 @@
-% reset
 close all ; clear ; clc ;
-% we add a path to the sensor classes 
 addpath('./sensorArray')
 addpath('./resize') ;
-% simulation parameters
-SIM_LENGTH = 300;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                           SIMULATION PARAMETERS                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+SIM_LENGTH = 300; % number of ticks
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 1;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
+
+BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
+SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
+SEND_COST = 3;  % mAh needed for sending information
+LISTEN_COST = 1;  % mAh needed for listening
+
 NR_SENSOR = 25 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
 % probabilities
@@ -42,7 +49,7 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
-world_sensor = sensor_create(SZ, NR_SENSOR, IDLE_TEMP);
+world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST);
 final_nsensors = numel(world_sensor);
 
 XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 
@@ -116,9 +123,9 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     axis([0 SZ(1) 0 SZ(2)])
     axis ij
     set(gca,'Color','k')
-    [i, j] = size(world_sensor);
-    for row =1:i
-        for col = 1:j
+    [j, k] = size(world_sensor);
+    for row =1:j
+        for col = 1:k
             Xsens = world_sensor{row,col}.X ;
             Ysens = world_sensor{row,col}.Y ;
             if world_sensor{row,col}.forestState == 0

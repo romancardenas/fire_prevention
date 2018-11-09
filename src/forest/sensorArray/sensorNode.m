@@ -1,4 +1,4 @@
-classdef sensorNetwork < handle
+classdef sensorNode < handle
     %SENSORNETWORK Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -19,7 +19,7 @@ classdef sensorNetwork < handle
     end
     
     methods
-        function self = sensorNetwork(Y,X,Temp) % constructor
+        function self = sensorNode(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost,ResendCost) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
