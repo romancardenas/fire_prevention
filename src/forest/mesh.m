@@ -1,4 +1,4 @@
-function fucked_up_thing = mesh(world_sensors, max_jumps)
+function fucked_up_thing = mesh(world_sensors, range, max_jumps)
 %MESH Summary of this function goes here
 %   Detailed explanation goes here
 % 1. if they want to send something, change knowlede
@@ -32,12 +32,12 @@ for step = 1:max_jumps
             end
             msg = fucked_up_thing(:, :, TOSEND, i, j);
             %world_sensors(i, j).send()  % reduce battery
-            for k = -1:1
+            for k = -range:range
                 row = i + k;
                 if (row < 1) || (row > m)
                     continue
                 end
-                for l = -1:1
+                for l = -range:range
                     col = j + l;
                     if (col < 1) || (col > n)
                         continue
