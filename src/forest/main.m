@@ -54,6 +54,8 @@ final_nsensors = numel(world_sensor);
 
 XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 
 
+% create figure
+figure(1)
 for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
@@ -63,7 +65,6 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
   
-    figure(1)
     % view the tree world
     ax1 = subplot(4,3,[1 4]);
     imagesc(world_tree);
