@@ -18,7 +18,6 @@ classdef sensorNode < handle
         ListenCost
         ResendCost
         manWindow
-        optWindow
         end
     
     properties (Constant)
@@ -33,7 +32,7 @@ classdef sensorNode < handle
     
     methods
         function self = sensorNode(Y,X,Temp,BattCap,SamplingCost, ...
-            SendingCost,ListenCost,ResendCost, manWindow, optWindow) % constructor
+            SendingCost,ListenCost,ResendCost, manWindow) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
@@ -46,6 +45,7 @@ classdef sensorNode < handle
             self.battery = BattCap ; 
             self.SamplingCost = SamplingCost ; self.SendingCost = SendingCost ;
             self.ListenCost = ListenCost ; self.ResendCost = ResendCost ;
+            self.manWindow = manWindow ;
             self.forestStatePrev = self.forestState ;
         end
         
@@ -57,14 +57,19 @@ classdef sensorNode < handle
             self.updateBatteryPow(samp) ; % sampling
             end
         end
-        function status = somethingToSay(self)
-            if self.forestState ~= self.forestStatePrev
-                status = -1 ;
+        function status = somethingToSay(self,tick)
+            if self.state == 1
+                if (ifself.forestState ~= self.forestStatePrev) || ...
+                   (mod(tick,self.manWindow) == 0 )
+                    status = -1 ;
+                else
+                    status = 0 ;
+                end
             else
                 status = 0 ;
-            end 
-            
+            end
         end
+    
         function updateState(self)
             % check if the state should be alive
             % if temperature > maxWorkT
