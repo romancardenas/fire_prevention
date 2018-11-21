@@ -1,4 +1,4 @@
-function rec_world_temp, new_sensor_temp = temp_reconstruct(new_sensors, prev_sensors, m, n)
+function [rec_world_temp, new_sensor_temp] = temp_reconstruct(new_sensors, prev_sensors, m, n)
 %TEMP_RECONSTRUCT Reconstruct scenario temperature based on sensors
 %   sensor_temp_world: reduced scenario with only sensor data
 %   m: real scenario width

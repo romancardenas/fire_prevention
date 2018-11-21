@@ -1,5 +1,4 @@
-function world_sensor = sensors_create(world_size, n_sensors, base_temp, ...
-    batt_capacity, sampling, send, listen, mand_window)
+function world_sensor = sensors_create(world_size, n_sensors, base_temp,batt_capacity, sampling, send, listen, mand_window)
 %SENSOR_CREATE Summary of this function goes here
 %   Detailed explanation goes here
 m = world_size(1);
@@ -17,8 +16,7 @@ Xsensor = double(int16(linspace(x_first, n-x_first, row_sensors))); % col
 world_sensor = cell(col_sensors, row_sensors) ;
 for row = 1:col_sensors
     for col = 1:row_sensors
-        world_sensor{row,col} = sensorNode(Ysensor(row),Xsensor(col), base_temp, ...
-            batt_capacity, sampling, send, listen, mand_window);
+        world_sensor{row,col} = sensorNode(Ysensor(row),Xsensor(col), base_temp,batt_capacity, sampling, send, listen, mand_window);
     end 
 end
 end

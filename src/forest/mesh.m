@@ -13,10 +13,10 @@ TOSEND = 3;
 % If a sensor has something to say, it copies it to its own TOSEND table
 for i = 1:m
     for j = 1:n
-        world_sensors(i, j).listen()
-        if world_sensors(i, j).somethingToSay(tick) ~= 0
+        world_sensors{i, j}.listen()
+        if world_sensors{i, j}.somethingToSay(tick) ~= 0
             %fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j);
-            fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j).getSensorData();
+            fucked_up_thing(i, j, TOSEND, i, j) = world_sensors{i, j}.sendSensorData();
         end
     end
 end
@@ -32,7 +32,7 @@ for step = 1:max_jumps
                 continue
             end
             msg = fucked_up_thing(:, :, TOSEND, i, j);
-            world_sensors(i, j).send()  % reduce battery
+            world_sensors{i, j}.send()  % reduce battery
             for k = -range:range
                 row = i + k;
                 if (row < 1) || (row > m)
@@ -62,7 +62,7 @@ for step = 1:max_jumps
     % Ensure that dead sensors don't participate in communication
     for i = 1:m
         for j = 1:n
-            if world_sensor(i, j).state == 0
+            if world_sensors{i, j}.state == 0
                 fucked_up_thing(:, :, TOSEND, :, :) = 0;
                 fucked_up_thing(:, :, KNOWLEDGE, :, :) = 0;
             end

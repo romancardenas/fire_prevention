@@ -71,8 +71,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     if (mod(i, MANDATORY_WINDOW) == 0) || (mod(i, OPTIONAL_WINDOW) == 0)
         world_sensor = sensor_step(world_sensor, world_temp);
         temp_from_sensors = mesh(world_sensor, RANGE, MAX_JUMPS, i);
-        est_temp_from_sensors, prev_temp_from_sensors = temp_reconstruct(...
-            temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
+        [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
     end
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;

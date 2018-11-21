@@ -31,8 +31,7 @@ classdef sensorNode < handle
     
     
     methods
-        function self = sensorNode(Y,X,Temp,BattCap,SamplingCost, ...
-            SendingCost,ListenCost,ResendCost, manWindow) % constructor
+        function self = sensorNode(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
@@ -44,7 +43,7 @@ classdef sensorNode < handle
             % set battery vars
             self.battery = BattCap ; 
             self.SamplingCost = SamplingCost ; self.SendingCost = SendingCost ;
-            self.ListenCost = ListenCost ; self.ResendCost = ResendCost ;
+            self.ListenCost = ListenCost ;
             self.manWindow = manWindow ;
             self.forestStatePrev = self.forestState ;
         end
@@ -57,7 +56,7 @@ classdef sensorNode < handle
         end
         function status = somethingToSay(self,tick)
             if self.state == 1
-                if (ifself.forestState ~= self.forestStatePrev) || ...
+                if (self.forestState ~= self.forestStatePrev) || ...
                    (mod(tick,self.manWindow) == 0 )
                     status = -1 ;
                 else
@@ -91,7 +90,6 @@ classdef sensorNode < handle
             % ouptut all data from sensors
             if self.state == 1 
                 temp = self.tempSensor.temp ;
-                self.updateBatteryPow(self.SendingCost) % send data
             else 
                 temp = 0 ;
             end
