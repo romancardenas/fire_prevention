@@ -1,9 +1,10 @@
-function fucked_up_thing = mesh(world_sensors, range, max_jumps, tick)
+function report = mesh(world_sensors, range, max_jumps, tick)
 %MESH Summary of this function goes here
 %   Detailed explanation goes here
 % 1. if they want to send something, change knowlede
 [m, n] = size(world_sensors);
 fucked_up_thing = zeros(m, n, 3, m, n);
+report = zeros(m, n);
 
 MAILBOX = 1;
 KNOWLEDGE = 2;
@@ -12,9 +13,9 @@ TOSEND = 3;
 % If a sensor has something to say, it copies it to its own TOSEND table
 for i = 1:m
     for j = 1:n
-        % if world_sensors(i, j) ~= 0
+        world_sensors(i, j).listen()
         if world_sensors(i, j).somethingToSay(tick) ~= 0
-            % fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j);
+            %fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j);
             fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j).getSensorData();
         end
     end
@@ -68,5 +69,22 @@ for step = 1:max_jumps
         end
     end
 end
-%% TODO Check the information in the edges and return all the messages that made it
+
+% Check the edges of the scenario in order to find the information that made it to the gateways
+i = 1;
+for j = 1:n
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+end
+j = n;
+for i = 1:m
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+end
+i = m;
+for j = n:-1:1
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+end
+j = 1;
+for i = m:-1:1
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+end
 end
