@@ -11,17 +11,21 @@ KNOWLEDGE = 2;
 TOSEND = 3;
 
 % If a sensor has something to say, it copies it to its own TOSEND table
+a = 1;
 for i = 1:m
     for j = 1:n
         world_sensors{i, j}.listen()
         if world_sensors{i, j}.somethingToSay(tick) ~= 0
+            if a == 1
+                a = 0;
+            end
             %fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j);
-            fucked_up_thing(i, j, TOSEND, i, j) = world_sensors{i, j}.sendSensorData();
+            a = world_sensors{i, j}.getSensorData();
+            fucked_up_thing(i, j, KNOWLEDGE, i, j) = a;
+            fucked_up_thing(i, j, TOSEND, i, j) = a;
         end
     end
 end
-% Initially, the KNOWLEDGE table is the same as the TOSEND table
-fucked_up_thing(:, :, KNOWLEDGE, :, :) = fucked_up_thing(:, :, TOSEND, :, :);
 
 % Communication protocol takes place as far as the protocol steps allow it
 for step = 1:max_jumps
@@ -63,8 +67,8 @@ for step = 1:max_jumps
     for i = 1:m
         for j = 1:n
             if world_sensors{i, j}.state == 0
-                fucked_up_thing(:, :, TOSEND, :, :) = 0;
-                fucked_up_thing(:, :, KNOWLEDGE, :, :) = 0;
+                fucked_up_thing(:, :, TOSEND, i, j) = 0;
+                fucked_up_thing(:, :, KNOWLEDGE, i, j) = 0;
             end
         end
     end

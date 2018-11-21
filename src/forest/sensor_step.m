@@ -9,7 +9,7 @@ for row = 1:m
     for col = 1:n 
         Xsens = world_sensor{row,col}.X ;
         Ysens = world_sensor{row,col}.Y ;
-        n_world_sensor{row,col}.update(world_temp(Ysens,Xsens)) ;
+        n_world_sensor{row, col}.updateForestState(world_temp(Ysens,Xsens)); % Sample and Process
     end
 end
 end

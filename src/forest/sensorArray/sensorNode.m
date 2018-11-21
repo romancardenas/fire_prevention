@@ -12,6 +12,7 @@ classdef sensorNode < handle
         Y 
         baseTemp
         price
+        forestState
         SamplingCost
         SendingCost
         ListenCost
@@ -25,11 +26,6 @@ classdef sensorNode < handle
         maxWorkT = 125 % maximum working temperature
     end
     
-    properties (Dependent)
-        forestState
-    end
-    
-    
     methods
         function self = sensorNode(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
             self.state = 1 ; % alive
@@ -42,22 +38,24 @@ classdef sensorNode < handle
             self.price = self.tempSensor.price + 300 ; % 300 is random
             % set battery vars
             self.battery = BattCap ; 
-            self.SamplingCost = SamplingCost ; self.SendingCost = SendingCost ;
+            self.SamplingCost = SamplingCost ; 
+            self.SendingCost = SendingCost ;
             self.ListenCost = ListenCost ;
             self.manWindow = manWindow ;
+            self.forestState = 0;
             self.forestStatePrev = self.forestState ;
         end
         
-        function update(self,Temp)
+        function updateTemp(self,Temp)
             % update all sensor variables based on sensor data
-            if self.state == 1 
             self.tempSensor.getTemp(Temp);
-            end
         end
+        
         function status = somethingToSay(self,tick)
             if self.state == 1
-                if (self.forestState ~= self.forestStatePrev) || ...
-                   (mod(tick,self.manWindow) == 0 )
+                if (mod(tick, self.manWindow) == 0)
+                    status = -1;
+                elseif (self.forestState ~= self.forestStatePrev)
                     status = -1 ;
                 else
                     status = 0 ;
@@ -86,36 +84,47 @@ classdef sensorNode < handle
             self.updateState() ;
         end
         
-        function temp = sendSensorData(self)
+        function temp = getSensorData(self)
             % ouptut all data from sensors
-            if self.state == 1 
-                temp = self.tempSensor.temp ;
-            else 
-                temp = 0 ;
-            end
+            temp = self.tempSensor.temp ;
         end 
         
-        function val = get.forestState(self) % get function, invoked before forestState is read
+        function updateForestState(self, temp)
+            if self.state == 1
+                self.updateTemp(temp);
+                self.updateState();
+            end
             if self.state == 1 
-                    temp = self.tempSensor.temp ;
-                    if temp > 110  
-                        tempState = 3 ; % forest is definently burning   
-                    elseif temp > 80
-                        tempState = 2 ; % temperature is very high
-                    elseif temp > (self.baseTemp + 5 )
-                        tempState = 1 ; % temperature is rising
-                    else 
-                        tempState = 0 ; % everything is fine    
-                    end
-                    self.forestStatePrev = tempState ; 
-                    val = tempState ;
+                temp = self.tempSensor.temp ;
+                self.forestStatePrev = self.forestState;  % Previous state is inherited
+                if temp > 110  
+                	tempState = 3 ; % forest is definently burning   
+                elseif temp > 80
+                	tempState = 2 ; % temperature is very high
+                elseif temp > (self.baseTemp + 5 )
+                	tempState = 1 ; % temperature is rising
+                else 
+                	tempState = 0 ; % everything is fine    
+                end
+                self.forestState = tempState; % forest State is different
+                self.updateBatteryPow(self.SamplingCost); % Cost of sampling
+            else
+                self.forestState = -1;
+            end
+        end
+        
+        function val = getForestState(self) % get function, invoked before forestState is read
+            if self.state == 1 
+                val = self.forestState;
             else 
                 val = -1 ;
             end
         end
+        
         function send(self)
             self.updateBatteryPow(self.SendingCost) ;
         end 
+        
         function listen(self)
             self.updateBatteryPow(self.ListenCost) ;
         end 

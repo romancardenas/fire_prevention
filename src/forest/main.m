@@ -70,103 +70,101 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
-    if (mod(i, MANDATORY_WINDOW) == 0) || (mod(i, OPTIONAL_WINDOW) == 0)
+    if ((mod(i, MANDATORY_WINDOW) == 0) || (mod(i, OPTIONAL_WINDOW) == 0))
         world_sensor = sensor_step(world_sensor, world_temp);
         temp_from_sensors = mesh(world_sensor, RANGE, MAX_JUMPS, i);
         [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
-    
+        
+        % view the tree world
+        ax1 = subplot(4,3,[1 4]);
+        imagesc(world_tree);
+        title(ax1, 'forest state')
+        % keep colors ranging from 0 to 3
+        caxis(ax1, [0 3]);
+        colormap(gca, map_forest);
+        cbh1 = colorbar ; %Create Colorbar
+        cbh1.Ticks = 0.3750:0.75:4 ;
+        cbh1.TickLabels = {'empty', 'tree', 'fire', 'burned'} ;
+        title(cbh1, 'state')
 
-  
-    % view the tree world
-    ax1 = subplot(4,3,[1 4]);
-    imagesc(world_tree);
-    title(ax1, 'forest state')
-    % keep colors ranging from 0 to 3
-    caxis(ax1, [0 3]);
-    colormap(gca, map_forest);
-    cbh1 = colorbar ; %Create Colorbar
-    cbh1.Ticks = 0.3750:0.75:4 ;
-    cbh1.TickLabels = {'empty', 'tree', 'fire', 'burned'} ;
-    title(cbh1, 'state')
-    
-    % view the temperature world
-    ax2 = subplot(4,3,[2 5]);
-    imagesc(world_temp);
-    title(ax2, 'forest temperature')
-    caxis(ax2, [0 400]);
-    colormap(gca, jet(64));
-    cbh2 = colorbar;
-    title(cbh2, 'temperature[ºC]')
-    
-    % graph of the number burned trees
-    ax3 = subplot(4,3,3);
-    title(ax3, 'trees burned')
-    axis([0 SIM_LENGTH 0 15000]);
-    p = plot(Y(1:i),XtreesBurned(1:i));hold on
-    p(1).LineWidth = 3;
-    p(1).Color = 'k';   
-    xlabel('ticks');
-    ylabel('Trees burned');
-    %figure(2)
-    
-    %Price
-    ax31 = subplot(4,3,6);
-    title(ax31, 'Price')
-    axis([0 SIM_LENGTH 0 100000]);
-    p = plot(Y(1:i),XpriceTree(1:i)) ;
-    p(1).LineWidth = 3;
-    p(1).Color = 'r';
-    hold on
-    s = plot(Y(1:i),XpriceSens(1:i)); hold on 
-    s(1).LineWidth = 3 ;
-    s(1).Color = 'k' ;
-    xlabel('ticks');
-    ylabel('DKK');
-    if fireDetected ~= -1
-        v=fireDetected; % Point where you want the line
-        t = plot([v v], ylim); % Plot Vertical Line
-        t(1).Color = 'b';
-    end
-    legend('trees','sensors') ;
-    
-    % graph of sensor data
-    ax4 = subplot(4,3,[7 10]) ;
-    title(ax4, 'sensors') 
-    %plot(1,1) 
-    axis([0 SZ(1) 0 SZ(2)])
-    axis ij
-    set(gca,'Color','k')
-    [j, k] = size(world_sensor);
-    for row =1:j
-        for col = 1:k
-            Xsens = world_sensor{row,col}.X ;
-            Ysens = world_sensor{row,col}.Y ;
-            if world_sensor{row,col}.forestState == 0
-                plot(Xsens,Ysens,'og')
-            elseif world_sensor{row,col}.forestState == 1
-                plot(Xsens,Ysens,'oy')
-            elseif world_sensor{row,col}.forestState == 2
-                plot(Xsens,Ysens,'or')
-            elseif world_sensor{row,col}.forestState == 3
-                plot(Xsens,Ysens,'ow')
-                if fireDetected == -1
-                    fireDetected = i;
-                end
-            else
-                plot(Xsens,Ysens,'ok')
-            end 
-        end
+        % view the temperature world
+        ax2 = subplot(4,3,[2 5]);
+        imagesc(world_temp);
+        title(ax2, 'forest temperature')
+        caxis(ax2, [0 400]);
+        colormap(gca, jet(64));
+        cbh2 = colorbar;
+        title(cbh2, 'temperature[ºC]')
+
+        % graph of the number burned trees
+        ax3 = subplot(4,3,3);
+        title(ax3, 'trees burned')
+        axis([0 SIM_LENGTH 0 15000]);
+        p = plot(Y(1:i),XtreesBurned(1:i));hold on
+        p(1).LineWidth = 3;
+        p(1).Color = 'k';   
+        xlabel('ticks');
+        ylabel('Trees burned');
+        %figure(2)
+
+        %Price
+        ax31 = subplot(4,3,6);
+        title(ax31, 'Price')
+        axis([0 SIM_LENGTH 0 100000]);
+        p = plot(Y(1:i),XpriceTree(1:i)) ;
+        p(1).LineWidth = 3;
+        p(1).Color = 'r';
         hold on
-    end
-   
-    % view the reconstructed temperature world
-    ax5 = subplot(4,3,[8 11]);
-    imagesc(est_temp_from_sensors);
-    title(ax5, 'reconstructed temperature')
-    caxis(ax5, [0 400]);
-    colormap(gca, jet(64));
-    cbh5 = colorbar;
-    title(cbh5, 'temperature[ºC]')
-    drawnow;
+        s = plot(Y(1:i),XpriceSens(1:i)); hold on 
+        s(1).LineWidth = 3 ;
+        s(1).Color = 'k' ;
+        xlabel('ticks');
+        ylabel('DKK');
+        if fireDetected ~= -1
+            v=fireDetected; % Point where you want the line
+            t = plot([v v], ylim); % Plot Vertical Line
+            t(1).Color = 'b';
+        end
+        legend('trees','sensors') ;
+
+        % graph of sensor data
+        ax4 = subplot(4,3,[7 10]) ;
+        title(ax4, 'sensors') 
+        %plot(1,1) 
+        axis([0 SZ(1) 0 SZ(2)])
+        axis ij
+        set(gca,'Color','k')
+        [j, k] = size(world_sensor);
+        for row =1:j
+            for col = 1:k
+                Xsens = world_sensor{row,col}.X ;
+                Ysens = world_sensor{row,col}.Y ;
+                if world_sensor{row,col}.forestState == 0
+                    plot(Xsens,Ysens,'og')
+                elseif world_sensor{row,col}.forestState == 1
+                    plot(Xsens,Ysens,'oy')
+                elseif world_sensor{row,col}.forestState == 2
+                    plot(Xsens,Ysens,'or')
+                elseif world_sensor{row,col}.forestState == 3
+                    plot(Xsens,Ysens,'ow')
+                    if fireDetected == -1
+                        fireDetected = i;
+                    end
+                else
+                    plot(Xsens,Ysens,'ok')
+                end 
+            end
+            hold on
+        end
+        
+        % view the reconstructed temperature world
+        ax5 = subplot(4,3,[8 11]);
+        imagesc(est_temp_from_sensors);
+        title(ax5, 'reconstructed temperature')
+        caxis(ax5, [0 100]);
+        colormap(gca, jet(64));
+        cbh5 = colorbar;
+        title(cbh5, 'temperature[ºC]')
+        drawnow;
     end
 end
