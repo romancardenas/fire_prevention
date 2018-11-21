@@ -5,7 +5,7 @@ addpath('./resize') ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                           SIMULATION PARAMETERS                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-SIM_LENGTH = 300; % number of ticks
+SIM_LENGTH = 300;  % number of ticks
 SZ = [150 150];  % world size
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
@@ -54,7 +54,7 @@ world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
 world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, ...
-    SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW, OPTIONAL_WINDOW);
+    SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
 
 XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 
