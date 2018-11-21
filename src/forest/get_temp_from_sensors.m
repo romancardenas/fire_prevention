@@ -1,4 +1,4 @@
-function temp_sensors = get_temp_from_sensors(world_sensor)
+function temp_sensors = get_temp_from_sensors(world_sensor, tick)
 [m, n] = size(world_sensor);
 temp_sensors = zeros(m, n);
 %GET_TEMP_FROM_SENSORS Summary of this function goes here

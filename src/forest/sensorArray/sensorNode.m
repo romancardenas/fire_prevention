@@ -53,7 +53,6 @@ classdef sensorNode < handle
             % update all sensor variables based on sensor data
             if self.state == 1 
             self.tempSensor.getTemp(Temp);
-            samp = double(self.SamplingCost) ;
             end
         end
         function status = somethingToSay(self,tick)

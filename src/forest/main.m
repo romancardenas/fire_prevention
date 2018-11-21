@@ -18,9 +18,10 @@ SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
 SEND_COST = 3;  % mAh needed for sending information
 LISTEN_COST = 1;  % mAh needed for listening
 RANGE = 1;  % Wireless range (neighbors)
+MAX_JUMPS = 1;  % Maximum jumps in the protocol
 
-MANDATORY_WINDOW = 50;  % Mandatory window time period
-OPTIONAL_WINDOW = 10;  % Optional window time period
+MANDATORY_WINDOW = 1;  % Mandatory window time period
+OPTIONAL_WINDOW = 1;   % Optional window time period
 
 NR_SENSOR = 25 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
@@ -53,9 +54,12 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
-world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, ...
-    SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
+
+temp_from_sensors = zeros(size(world_sensor));
+prev_temp_from_sensors = zeros(size(world_sensor));
+est_temp_from_sensors = zeros(SZ(1), SZ(2));
 
 XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 
 
@@ -64,9 +68,12 @@ figure(1)
 for i=1:SIM_LENGTH % replace with SIM_LENGTH
     world_temp = temperature_step(world_temp, world_tree, T_FIRE, T_BURNED, IDLE_TEMP);
     world_tree =fire_step(world_tree, P_EXTEND_FIRE, P_STOP_FIRE);
-    world_sensor = sensor_step(world_sensor, world_temp);
-    temp_from_sensors = get_temp_from_sensors(world_sensor);
-    temp_from_sensors = temp_reconstruct(temp_from_sensors, SZ(1), SZ(2));
+    if (mod(i, MANDATORY_WINDOW) == 0) || (mod(i, OPTIONAL_WINDOW) == 0)
+        world_sensor = sensor_step(world_sensor, world_temp);
+        temp_from_sensors = mesh(world_sensor, RANGE, MAX_JUMPS, i);
+        est_temp_from_sensors, prev_temp_from_sensors = temp_reconstruct(...
+            temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
+    end
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
   
@@ -154,7 +161,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
    
     % view the reconstructed temperature world
     ax5 = subplot(4,3,[8 11]);
-    imagesc(temp_from_sensors);
+    imagesc(est_temp_from_sensors);
     title(ax5, 'reconstructed temperature')
     caxis(ax5, [0 400]);
     colormap(gca, jet(64));
