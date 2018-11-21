@@ -2,7 +2,6 @@ classdef sensorNode < handle
     
     properties (Access = private) % only access if sensor is alive
         battery 
-        state % ALIVE = 1 or DEAD = 0
         forestStatePrev
         % sensor's connected
         tempSensor
@@ -18,6 +17,7 @@ classdef sensorNode < handle
         ListenCost
         ResendCost
         manWindow
+        state % ALIVE = 1 or DEAD = 0
         end
     
     properties (Constant)
@@ -54,7 +54,6 @@ classdef sensorNode < handle
             if self.state == 1 
             self.tempSensor.getTemp(Temp);
             samp = double(self.SamplingCost) ;
-            self.updateBatteryPow(samp) ; % sampling
             end
         end
         function status = somethingToSay(self,tick)
@@ -114,9 +113,16 @@ classdef sensorNode < handle
                     self.forestStatePrev = tempState ; 
                     val = tempState ;
             else 
-                val = 0 ;
+                val = -1 ;
             end
         end
+        function send(self)
+            self.updateBatteryPow(self.SendingCost) ;
+        end 
+        function listen(self)
+            self.updateBatteryPow(self.ListenCost) ;
+        end 
+        
     end
 end
 

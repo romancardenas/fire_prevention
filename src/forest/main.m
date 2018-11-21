@@ -140,11 +140,13 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
                 plot(Xsens,Ysens,'oy')
             elseif world_sensor{row,col}.forestState == 2
                 plot(Xsens,Ysens,'or')
+            elseif world_sensor{row,col}.forestState == 3
+                plot(Xsens,Ysens,'ow')
                 if fireDetected == -1
                     fireDetected = i;
                 end
             else
-                plot(Xsens,Ysens,'ow')
+                plot(Xsens,Ysens,'ok')
             end 
         end
         hold on
