@@ -1,4 +1,5 @@
-function world_sensor = sensors_create(world_size, n_sensors, base_temp, batt_capacity, sampling, send, listen)
+function world_sensor = sensors_create(world_size, n_sensors, base_temp, ...
+    batt_capacity, sampling, send, listen, mand_window, opt_window)
 %SENSOR_CREATE Summary of this function goes here
 %   Detailed explanation goes here
 m = world_size(1);
@@ -13,12 +14,11 @@ x_first = n/row_sensors/2;
 Ysensor = double(int16(linspace(y_first, m-y_first, col_sensors))); % row 
 Xsensor = double(int16(linspace(x_first, n-x_first, row_sensors))); % col
 
-resend = send; % TODO define different costs for resending messages (bell shapes)
-
 world_sensor = cell(col_sensors, row_sensors) ;
 for row = 1:col_sensors
     for col = 1:row_sensors
-        world_sensor{row,col} = sensorNode(Ysensor(row),Xsensor(col), base_temp, batt_capacity, sampling, send, listen, resend);
+        world_sensor{row,col} = sensorNode(Ysensor(row),Xsensor(col), base_temp, ...
+            batt_capacity, sampling, send, listen, mand_window, opt_window);
     end 
 end
 end

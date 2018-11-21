@@ -17,6 +17,10 @@ BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
 SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
 SEND_COST = 3;  % mAh needed for sending information
 LISTEN_COST = 1;  % mAh needed for listening
+RANGE = 1;  % Wireless range (neighbors)
+
+MANDATORY_WINDOW = 50;  % Mandatory window time period
+OPTIONAL_WINDOW = 10;  % Optional window time period
 
 NR_SENSOR = 25 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
@@ -49,7 +53,8 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
-world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST);
+world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, ...
+    SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW, OPTIONAL_WINDOW);
 final_nsensors = numel(world_sensor);
 
 XpriceSens = XpriceSens * (final_nsensors * world_sensor{1,1}.price); % Don't like price inside the object 

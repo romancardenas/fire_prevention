@@ -1,4 +1,4 @@
-function fucked_up_thing = mesh(world_sensors, range, max_jumps)
+function fucked_up_thing = mesh(world_sensors, range, max_jumps, tick)
 %MESH Summary of this function goes here
 %   Detailed explanation goes here
 % 1. if they want to send something, change knowlede
@@ -15,7 +15,7 @@ for i = 1:m
         if world_sensors(i, j) ~= 0
         %if world_sensors(i, j).somethingToSay ~= 0
             fucked_up_thing(i, j, TOSEND, i, j) = world_sensors(i, j);
-            %fucked_up_thing(i, j, TOSEND) = world_sensors(i, j).getTemp();
+            %fucked_up_thing(i, j, TOSEND) = world_sensors(i, j).getTemp(tick);
         end
     end
 end
