@@ -2,7 +2,8 @@ classdef sensorNode < handle
     
     properties (Access = private) % only access if sensor is alive
         battery 
-        state % ALIVE = 1 or DEAD = 0 
+        state % ALIVE = 1 or DEAD = 0
+        forestStatePrev
         % sensor's connected
         tempSensor
     end
@@ -16,6 +17,8 @@ classdef sensorNode < handle
         SendingCost
         ListenCost
         ResendCost
+        manWindow
+        optWindow
         end
     
     properties (Constant)
@@ -30,7 +33,7 @@ classdef sensorNode < handle
     
     methods
         function self = sensorNode(Y,X,Temp,BattCap,SamplingCost, ...
-            SendingCost,ListenCost,ResendCost) % constructor
+            SendingCost,ListenCost,ResendCost, manWindow, optWindow) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
@@ -43,6 +46,7 @@ classdef sensorNode < handle
             self.battery = BattCap ; 
             self.SamplingCost = SamplingCost ; self.SendingCost = SendingCost ;
             self.ListenCost = ListenCost ; self.ResendCost = ResendCost ;
+            self.forestStatePrev = self.forestState ;
         end
         
         function update(self,Temp)
@@ -50,10 +54,17 @@ classdef sensorNode < handle
             if self.state == 1 
             self.tempSensor.getTemp(Temp);
             samp = double(self.SamplingCost) ;
-            self.updateBatteryPow(samp) % sampling
+            self.updateBatteryPow(samp) ; % sampling
             end
         end
-        
+        function status = somethingToSay(self)
+            if self.forestState ~= self.forestStatePrev
+                status = -1 ;
+            else
+                status = 0 ;
+            end 
+            
+        end
         function updateState(self)
             % check if the state should be alive
             % if temperature > maxWorkT
@@ -95,6 +106,7 @@ classdef sensorNode < handle
                     else 
                         tempState = 0 ; % everything is fine    
                     end
+                    self.forestStatePrev = tempState ; 
                     val = tempState ;
             else 
                 val = 0 ;
