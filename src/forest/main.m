@@ -53,6 +53,17 @@ world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
+%Range and distance stuff
+%Range should be 1 to 5 km
+%Nodes should reach 1 to 3 neighbours 
+
+range = input('Select a range from 1 to 5 km');
+neighbour_reach = 1;
+max_distance = mod(range*1000,211);
+distance = max_distance/neighbour_reach;
+
+
+
 % create sensor array 
 world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
