@@ -5,8 +5,9 @@ addpath('./resize') ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                           SIMULATION PARAMETERS                         %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-SIM_LENGTH = 300;  % number of ticks
-SZ = [150 150];  % world size
+SIM_LENGTH = 300;  % number of minutes to simulate
+TILE_SIZE = 150;  % tile size in meters
+SZ = [150 150];  % world size in tiles
 IDLE_TEMP   = 24;  % idle temperature
 FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 1;  % Number of fire
@@ -17,6 +18,18 @@ BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
 SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
 SEND_COST = 3;  % mAh needed for sending information
 LISTEN_COST = 1;  % mAh needed for listening
+
+%Range and distance stuff
+%Range should be 1 to 5 km
+%Nodes should reach 1 to 3 neighbours 
+
+RANGE = input('Select a range from 1 to 5 km: ');  % Wireless range (neighbors)
+NEIGHBORS = 1;
+max_tiles_btw_sensors = floor((RANGE*1000) / (TILE_SIZE*sqrt(2)));
+tiles_btw_sensors = floor(max_tiles_btw_sensors/NEIGHBORS);
+NR_SENSORS = ceil(SZ/tiles_btw_sensors);
+
+
 RANGE = 1;  % Wireless range (neighbors)
 MAX_JUMPS = 3;  % Maximum jumps in the protocol
 
@@ -53,20 +66,13 @@ world_tree = forest_create(SZ(1), SZ(2), FOREST_DENSITY);
 world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
-%Range and distance stuff
-%Range should be 1 to 5 km
-%Nodes should reach 1 to 3 neighbours 
 
-range = input('Select a range from 1 to 5 km');
-neighbour_reach = 1;
-max_distance = mod(range*1000,211);
-distance = max_distance/neighbour_reach;
 
 
 
 % create sensor array 
 % TODO change this to the new stuff...
-world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+world_sensor = sensors_create(SZ, NR_SENSORS, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
 % TODO ... until here
 
