@@ -17,8 +17,8 @@ T_BURNED = 2;  % temperature to be decreased due to burned area
 BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
 PROCESS_COST_ACT = 5 * 5.2e-3 ; % battery needed for active mode
 PROCESS_COST_IDLE = 5 * 1.2e-3 ; % battery needed for idle mode
-SAMPLING_COST = (3.3 * 550e-6) + PROCCES_COST_ACT;  % mAh needed for sampling and processing temperature
-SEND_COST = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information
+SAMPLING_COST = (3.3 * 550e-6) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
+SEND_COST_5 = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information
 LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
 RANGE = input('Select a range from 1 to 5 km: ');  % Wireless range (neighbors)
@@ -26,6 +26,7 @@ NEIGHBORS = 1;
 max_tiles_btw_sensors = floor((RANGE*1000) / (TILE_SIZE*sqrt(2)));
 tiles_btw_sensors = floor(max_tiles_btw_sensors/NEIGHBORS);
 NR_SENSORS = ceil(SZ/tiles_btw_sensors);
+SEND_COST = SEND_COST_5 .* (RANGE / 5)^2;
 
 MAX_JUMPS = 3;  % Maximum jumps in the protocol
 
