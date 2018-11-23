@@ -65,8 +65,10 @@ distance = max_distance/neighbour_reach;
 
 
 % create sensor array 
+% TODO change this to the new stuff...
 world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
+% TODO ... until here
 
 temp_from_sensors = zeros(size(world_sensor));
 prev_temp_from_sensors = zeros(size(world_sensor));
