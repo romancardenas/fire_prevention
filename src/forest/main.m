@@ -13,6 +13,8 @@ FOREST_DENSITY = 0.9;  % initial forest density
 N_FIRES = 1;  % Number of fire
 T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
+TOTAL_TICKS = 3 * 30 * 24 * 60 ;
+EPSILON = 0.05 ;
 
 BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
 PROCESS_COST_ACT = 5 * 5.2e-3 ; % battery needed for active mode
@@ -28,7 +30,25 @@ tiles_btw_sensors = floor(max_tiles_btw_sensors/NEIGHBORS);
 NR_SENSORS = ceil(SZ/tiles_btw_sensors);
 SEND_COST = SEND_COST_5 .* (RANGE / 5)^2;
 
+% mandatory window ratio
 MAX_JUMPS = 3;  % Maximum jumps in the protocol
+for N = 1:5
+    OPTIONAL_WINDOW_COST = (SAMPLING_COST + LISTEN_COST +  0.1 * SEND_COST ) ;
+    MANDATORY_WINDOW_COST = (SAMPLING_COST + LISTEN_COST + (SEND_COST*MAX_JUMPS ))  ;
+    
+    window = TOTAL_TICKS / (BATTERY_CAP * ( 1 - EPSILON ) ) * ((N-1)/N * OPTIONAL_WINDOW_COST + MANDATORY_WINDOW_COST/N) ;
+    window = ceil(window ) ;
+    
+    
+    OPTIONAL_WINDOW = window ;
+    
+    MANDATORY_WINDOW = window * N ;
+    
+    
+    
+    A = 0 ;
+    
+end
 
 MANDATORY_WINDOW = 20;  % Mandatory window time period
 OPTIONAL_WINDOW = 5;   % Optional window time period
