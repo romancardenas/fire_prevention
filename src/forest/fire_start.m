@@ -13,7 +13,7 @@ coor = zeros(1, 2);
 new_world = world;
 for i = 1:n_fires
     while 1
-        coor = round(rand(1, 2) .* [m n]);
+        coor = ceil(rand(1, 2) .* [m n]);
         if world(coor(1), coor(2)) == TREE
             break
         end

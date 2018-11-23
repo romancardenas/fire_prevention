@@ -97,9 +97,9 @@ classdef sensorNode < handle
             if self.state == 1 
                 temp = self.tempSensor.temp ;
                 self.forestStatePrev = self.forestState;  % Previous state is inherited
-                if temp > 110  
+                if temp > 70  
                 	tempState = 3 ; % forest is definently burning   
-                elseif temp > 80
+                elseif temp > 50
                 	tempState = 2 ; % temperature is very high
                 elseif temp > (self.baseTemp + 5 )
                 	tempState = 1 ; % temperature is rising
