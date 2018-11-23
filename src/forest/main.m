@@ -15,13 +15,11 @@ T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 
 BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
-SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
-SEND_COST = 3;  % mAh needed for sending information
-LISTEN_COST = 1;  % mAh needed for listening
-
-%Range and distance stuff
-%Range should be 1 to 5 km
-%Nodes should reach 1 to 3 neighbours 
+PROCESS_COST_ACT = 5 * 5.2e-3 ; % battery needed for active mode
+PROCESS_COST_IDLE = 5 * 1.2e-3 ; % battery needed for idle mode
+SAMPLING_COST = (3.3 * 550e-6) + PROCCES_COST_ACT;  % mAh needed for sampling and processing temperature
+SEND_COST = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information
+LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
 RANGE = input('Select a range from 1 to 5 km: ');  % Wireless range (neighbors)
 NEIGHBORS = 1;
@@ -29,8 +27,6 @@ max_tiles_btw_sensors = floor((RANGE*1000) / (TILE_SIZE*sqrt(2)));
 tiles_btw_sensors = floor(max_tiles_btw_sensors/NEIGHBORS);
 NR_SENSORS = ceil(SZ/tiles_btw_sensors);
 
-
-RANGE = 1;  % Wireless range (neighbors)
 MAX_JUMPS = 3;  % Maximum jumps in the protocol
 
 MANDATORY_WINDOW = 20;  % Mandatory window time period
@@ -91,7 +87,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
     if ((mod(i, MANDATORY_WINDOW) == 0) || (mod(i, OPTIONAL_WINDOW) == 0))
         world_sensor = sensor_step(world_sensor, world_temp);
-        temp_from_sensors = mesh(world_sensor, RANGE, MAX_JUMPS, i);
+        temp_from_sensors = mesh(world_sensor, NEIGHBORS, MAX_JUMPS, i);
         [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
         
         % view the tree world
