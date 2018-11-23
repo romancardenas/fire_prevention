@@ -28,7 +28,8 @@ tiles_btw_sensors = floor(max_tiles_btw_sensors/NEIGHBORS);
 NR_SENSORS = ceil(SZ/tiles_btw_sensors);
 SEND_COST = SEND_COST_5 .* (RANGE / 5)^2;
 
-MAX_JUMPS = 3;  % Maximum jumps in the protocol
+min_jumps = floor(min(NR_SENSORS(1),NR_SENSORS(2)) /2);
+MAX_JUMPS = floor(min_jumps * 1.5);  % Maximum jumps in the protocol
 
 MANDATORY_WINDOW = 20;  % Mandatory window time period
 OPTIONAL_WINDOW = 5;   % Optional window time period
