@@ -14,9 +14,11 @@ T_FIRE  = 40;  % temperature to be increased due to fire
 T_BURNED = 2;  % temperature to be decreased due to burned area
 
 BATTERY_CAP = 3000;  % Battery capacity in mAh (for the sensors)
-SAMPLING_COST = 0.5;  % mAh needed for sampling and processing temperature
-SEND_COST = 3;  % mAh needed for sending information
-LISTEN_COST = 1;  % mAh needed for listening
+PROCESS_COST_ACT = 5 * 5.2e-3 ; % battery needed for active mode
+PROCESS_COST_IDLE = 5 * 1.2e-3 ; % battery needed for idle mode
+SAMPLING_COST = (3.3 * 550e-6) + PROCCES_COST_ACT;  % mAh needed for sampling and processing temperature
+SEND_COST = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information
+LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 RANGE = 1;  % Wireless range (neighbors)
 MAX_JUMPS = 3;  % Maximum jumps in the protocol
 
