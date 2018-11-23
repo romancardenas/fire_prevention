@@ -31,7 +31,8 @@ NR_SENSORS = ceil(SZ/tiles_btw_sensors);
 SEND_COST = SEND_COST_5 .* (RANGE / 5)^2;
 
 % mandatory window ratio
-MAX_JUMPS = 3;  % Maximum jumps in the protocol
+min_jumps = floor(min(NR_SENSORS(1),NR_SENSORS(2)) /2);
+MAX_JUMPS = floor(min_jumps * 1.5);  % Maximum jumps in the protocol
 for N = 1:5
     OPTIONAL_WINDOW_COST = (SAMPLING_COST + LISTEN_COST +  0.1 * SEND_COST ) ;
     MANDATORY_WINDOW_COST = (SAMPLING_COST + LISTEN_COST + (SEND_COST*MAX_JUMPS ))  ;
@@ -49,9 +50,6 @@ for N = 1:5
     A = 0 ;
     
 end
-
-MANDATORY_WINDOW = 20;  % Mandatory window time period
-OPTIONAL_WINDOW = 5;   % Optional window time period
 
 NR_SENSOR = 25 ; % number of sensors
 TREE_COST = 5;  % Tree cost in DKK
