@@ -7,6 +7,7 @@ addpath('./resize') ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 WORKING_TIME = input('Insert total system working time (months): ');  % Working time in months
 TIME_PRECISION = input('Insert time precision (minutes): ');  % How fast should the system detect a fire
+BATTERY = [3000 6000 9000 12000 16000];  % Different battery capacities for the system
 TILE_SIZE = 150;  % tile size in meters
 FIRE_SPEED = 150;  % fire speed in meters/minute
 MIN_SPACE_PRECISION = TIME_PRECISION * FIRE_SPEED / TILE_SIZE;
@@ -39,7 +40,7 @@ MAX_JUMPS = floor(min_jumps * 1.5);  % Maximum jumps in the mesh protocol
 
 OPTIONAL_WINDOW_COST = (SAMPLING_COST + LISTEN_COST +  0.1 * SEND_COST ) ;
 MANDATORY_WINDOW_COST = (SAMPLING_COST + LISTEN_COST + (SEND_COST .* MAX_JUMPS ));
-window = TIME_PRECISION;
+window = floor(TIME_PRECISION/2);
 OPTIONAL_WINDOW = window;
 
 report = zeros(20, 5);
@@ -47,7 +48,6 @@ for N = 1:20
     BATTERY_CAP = ceil(TOTAL_TICKS / window * ((N-1)/N*OPTIONAL_WINDOW_COST + 1/N*MANDATORY_WINDOW_COST)/(1-EPSILON));
     report(N, :) = BATTERY_CAP'; 
 end
-
 NR_SENSOR = zeros(1, 2);
 index = 1;
 selected_index = -1;
@@ -58,12 +58,22 @@ for i = (tiles_btw_sensors < MIN_SPACE_PRECISION)
     end
     index = index + 1;
 end
+
 windows_to_study = report(:, selected_index);
 [a, b] = size(windows_to_study);
-for i = 1:a
-    if windows_to_study(i) < 3000
-        MANDATORY_WINDOW = OPTIONAL_WINDOW * i;
-        break
+MANDATORY_WINDOW = 0;
+aux = ['Optional window size (min):', num2str(OPTIONAL_WINDOW)];
+disp(aux)
+for i = BATTERY
+    for j = 1:a
+        if windows_to_study(j) < i
+            if MANDATORY_WINDOW == 0
+                MANDATORY_WINDOW = OPTIONAL_WINDOW * j;
+            end
+            aux = ['Mandatory window size (battery capacity =',num2str(i),'mAh)(min):', num2str(OPTIONAL_WINDOW*j)];
+            disp(aux)
+            break
+        end
     end
 end
 
@@ -115,7 +125,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
     if ((mod(i-1, MANDATORY_WINDOW) == 0) || (mod(i-1, OPTIONAL_WINDOW) == 0))
         world_sensor = sensor_step(world_sensor, world_temp);
-        temp_from_sensors = mesh(world_sensor, 1, MAX_JUMPS, i-1);
+        temp_from_sensors = mesh_edges(world_sensor, 1, MAX_JUMPS, i-1);
         [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
         
         % view the tree world

@@ -1,4 +1,4 @@
-function report = mesh(world_sensors, range, max_jumps, tick)
+function report = mesh_edges(world_sensors, range, max_jumps, tick)
 %MESH Summary of this function goes here
 %   Detailed explanation goes here
 % 1. if they want to send something, change knowlede
@@ -74,21 +74,17 @@ for step = 1:max_jumps
     end
 end
 
-% Check the edges of the scenario in order to find the information that made it to the gateways
-i = 1;
-for j = 1:n
-    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+a = [round(m/4) round(m*3/4)];
+b = [round(n/4) round(n*3/4)];
+if world_sensors{a(1), b(1)}.state ~= 0
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, a(1), b(1)) + report;
 end
-j = n;
-for i = 1:m
-    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+if world_sensors{a(1), b(2)}.state ~= 0
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, a(1), b(2)) + report;
 end
-i = m;
-for j = n:-1:1
-    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
+if world_sensors{a(2), b(1)}.state ~= 0
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, a(2), b(1)) + report;
 end
-j = 1;
-for i = m:-1:1
-    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, i, j) + report;
-end
+if world_sensors{a(2), b(2)}.state ~= 0
+    report = double(report == 0).*fucked_up_thing(:, :, KNOWLEDGE, a(2), b(2)) + report;
 end
