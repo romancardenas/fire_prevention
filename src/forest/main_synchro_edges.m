@@ -25,7 +25,7 @@ EPSILON = 0.05 ;
 
 PROCESS_COST_ACT = 5 * 5.2e-3 ; % energy needed for active mode (mAh)
 PROCESS_COST_IDLE = 5 * 1.2e-3 ; % energy needed for idle mode (mAh)
-SAMPLING_COST = (3.3 * 550e-6) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
+SAMPLING_COST = (4*5 * 1e-3) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
 SEND_COST_5 = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information at 5 km
 LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
@@ -215,7 +215,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
         ax5 = subplot(4,3,[8 11]);
         imagesc(est_temp_from_sensors);
         title(ax5, 'reconstructed temperature')
-        caxis(ax5, [0 100]);
+        caxis(ax5, [0 400]);
         colormap(gca, jet(64));
         cbh5 = colorbar;
         title(cbh5, 'temperature[ºC]')

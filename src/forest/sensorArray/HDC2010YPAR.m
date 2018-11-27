@@ -5,7 +5,6 @@ classdef HDC2010YPAR < handle
     
     properties (Constant)
         Terror = 0.2 
-        Herror = 2  
         price = 8.27  % based on digikey price: unit price with bulk purchase of 3000 units
     end
     
