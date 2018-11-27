@@ -38,7 +38,7 @@ SEND_COST = SEND_COST_5 .* (RANGE / 5).^2;
 min_jumps = floor(min(NR_SENSORS(1, :)/2,NR_SENSORS(2, :)/2) /2);
 MAX_JUMPS = floor(min_jumps * 1.5);  % Maximum jumps in the mesh protocol
 
-OPTIONAL_WINDOW_COST = (SAMPLING_COST + LISTEN_COST +  0.1 * SEND_COST ) ;
+OPTIONAL_WINDOW_COST = (SAMPLING_COST + LISTEN_COST +  0.1 * SEND_COST) ;
 MANDATORY_WINDOW_COST = (SAMPLING_COST + LISTEN_COST + (SEND_COST .* MAX_JUMPS ));
 window = floor(TIME_PRECISION/2);
 OPTIONAL_WINDOW = window;
