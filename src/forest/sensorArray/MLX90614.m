@@ -1,14 +1,14 @@
 classdef MLX90614 < handle
     %HDC2010YPAR class is a representation of the MLX90614 temp sensor
-    % in this class the idea is that there are 4 sensor, one in each 
-    % direction
+    % in this class the idea is that there are 1 sensor, which is rotated
+    % by a mount with a motor
     properties (Access = public)
         ownTemp
     end 
     
     properties (Constant)
         Terror = 0.2 
-        price = 384  
+        price = 600 % 100 for the sensor 500 for the mount  
         range = 2 
     end
     
