@@ -29,7 +29,7 @@ LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
 RANGE = 2;  % Wireless range (km^2)
 NR_SENSORS_MAIN = [17 17];
-NR_SENSORS_LASER = [17 17];
+NR_SENSORS_LASER = [14 14];
 SEND_COST = SEND_COST_5 .* (RANGE / 5).^2;
 
 min_jumps_main_edge = floor(min(NR_SENSORS_MAIN(1),NR_SENSORS_MAIN(2)) /2);

@@ -11,7 +11,7 @@ SENSOR_TILE_RANGE = input('Insert tile range for sensors (tiles): ');  % How far
 BATTERY = [3000 6000 9000 12000 16000];  % Different battery capacities for the system
 TILE_SIZE = 150;  % tile size in meters
 FIRE_SPEED = 150;  % fire speed in meters/minute
-MIN_SPACE_PRECISION = TIME_PRECISION * FIRE_SPEED / TILE_SIZE + 2 * (SENSOR_TILE_RANGE - 1);
+MIN_SPACE_PRECISION = TIME_PRECISION * FIRE_SPEED / TILE_SIZE + 2*SENSOR_TILE_RANGE;
 
 SIM_LENGTH = 300;  % number of minutes to simulate
 SZ = [150 150];  % world size in tiles
