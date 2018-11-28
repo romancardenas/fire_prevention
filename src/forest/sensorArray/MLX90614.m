@@ -9,15 +9,16 @@ classdef MLX90614 < handle
     properties (Constant)
         Terror = 0.2 
         price = 384  
-        range = 2 
     end
     
     properties (Access = public ) 
+        range
         temp 
     end
     methods
-        function self = MLX90614(temp)
+        function self = MLX90614(temp, range)
             self.temp = temp ; 
+            self.range = range;
             self.ownTemp = temp ;
         end
         function getTemp(self, Tmatrix, Tself)

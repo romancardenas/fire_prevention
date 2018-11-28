@@ -1,5 +1,5 @@
-function world_sensor = main_sensors_create(world_size, n_sensors, base_temp, ...
-    batt_capacity, sampling, send, listen, mand_window)
+function world_sensor = laser_sensors_create(world_size, n_sensors, base_temp, ...
+    batt_capacity, sampling, send, listen, mand_window, range)
 %SENSOR_CREATE Creates initial sensor scenario
 %   world_size: tuple containing the number of tiles (m, n)
 %   n_sensors: tuple containing the number of sensors per column and row (col_sensors, row_sensors)
@@ -26,7 +26,7 @@ Xsensor = double(int16(linspace(x_first, n-x_first, row_sensors))); % col
 world_sensor = cell(col_sensors, row_sensors) ;
 for row = 1:col_sensors
     for col = 1:row_sensors
-        world_sensor{row,col} = sensorNodeMain(Ysensor(row),Xsensor(col), base_temp,batt_capacity, sampling, send, listen, mand_window);
+        world_sensor{row,col} = sensorNodeLaser(Ysensor(row),Xsensor(col), base_temp,batt_capacity, sampling, send, listen, mand_window, range);
     end 
 end
 end

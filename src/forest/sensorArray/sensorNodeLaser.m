@@ -4,12 +4,12 @@ classdef sensorNodeLaser < handle
         battery 
         forestStatePrev
         % sensor's connected
-        tempSensor
     end
     
     properties (Access = public) % things we know about the sensor
         X 
         Y 
+        tempSensor
         baseTemp
         price
         forestState
@@ -27,13 +27,13 @@ classdef sensorNodeLaser < handle
     end
     
     methods
-        function self = sensorNodeLaser(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
+        function self = sensorNodeLaser(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow,range) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
             self.baseTemp = Temp ;
             % create instance of temp sensor
-            self.tempSensor = MLX90614(Temp) ;
+            self.tempSensor = MLX90614(Temp, range) ;
             % get price of sensor network
             self.price = self.tempSensor.price + 300 ; % 300 is random
             % set battery vars

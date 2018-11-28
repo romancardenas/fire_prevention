@@ -7,10 +7,11 @@ addpath('./resize') ;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 WORKING_TIME = input('Insert total system working time (months): ');  % Working time in months
 TIME_PRECISION = input('Insert time precision (minutes): ');  % How fast should the system detect a fire
+SENSOR_TILE_RANGE = input('Insert tile range for sensors (tiles): ');  % How far can the laser sensor reach
 BATTERY = [3000 6000 9000 12000 16000];  % Different battery capacities for the system
 TILE_SIZE = 150;  % tile size in meters
 FIRE_SPEED = 150;  % fire speed in meters/minute
-MIN_SPACE_PRECISION = TIME_PRECISION * FIRE_SPEED / TILE_SIZE;
+MIN_SPACE_PRECISION = TIME_PRECISION * FIRE_SPEED / TILE_SIZE + 2 * (SENSOR_TILE_RANGE - 1);
 
 SIM_LENGTH = 300;  % number of minutes to simulate
 SZ = [150 150];  % world size in tiles
@@ -25,12 +26,11 @@ EPSILON = 0.05 ;
 
 PROCESS_COST_ACT = 5 * 5.2e-3 ; % energy needed for active mode (mAh)
 PROCESS_COST_IDLE = 5 * 1.2e-3 ; % energy needed for idle mode (mAh)
-SAMPLING_COST = (4*5 * 1.2e-3) + PROCESS_COST_ACT ; 
-%SAMPLING_COST_LASER = (4*5 * 1e-3) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
+SAMPLING_COST = (4*5 * 1e-3) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
 SEND_COST_5 = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information at 5 km
 LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
-RANGE = [1, 2, 3, 4, 5];  % Wireless range (km^2)
+RANGE = 1:0.5:5;  % Wireless range (km^2)
 tiles_btw_sensors = floor((RANGE*1000) ./ (TILE_SIZE * sqrt(2)));
 NR_SENSORS = ceil(SZ' ./ tiles_btw_sensors);
 SEND_COST = SEND_COST_5 .* (RANGE / 5).^2;
@@ -44,7 +44,7 @@ MANDATORY_WINDOW_COST = (SAMPLING_COST + LISTEN_COST + (SEND_COST .* MAX_JUMPS )
 window = floor(TIME_PRECISION/2);
 OPTIONAL_WINDOW = window;
 
-report = zeros(20, 5);
+report = zeros(20, 9);
 for N = 1:20
     BATTERY_CAP = ceil(TOTAL_TICKS / window * ((N-1)/N*OPTIONAL_WINDOW_COST + 1/N*MANDATORY_WINDOW_COST)/(1-EPSILON));
     report(N, :) = BATTERY_CAP'; 
@@ -108,7 +108,7 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
-world_sensor = main_sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+world_sensor = laser_sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW, SENSOR_TILE_RANGE);
 final_nsensors = numel(world_sensor);
 
 temp_from_sensors = zeros(size(world_sensor));
@@ -125,7 +125,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
     if ((mod(i-1, MANDATORY_WINDOW) == 0) || (mod(i-1, OPTIONAL_WINDOW) == 0))
-        world_sensor = main_sensor_step(world_sensor, world_temp);
+        world_sensor = laser_sensor_step(world_sensor, world_temp);
         temp_from_sensors = mesh_edges(world_sensor, 1, MAX_JUMPS, i-1);
         [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
         
