@@ -1,4 +1,4 @@
-classdef sensorNode < handle
+classdef sensorNodeLaser < handle
     
     properties (Access = private) % only access if sensor is alive
         battery 
@@ -27,13 +27,13 @@ classdef sensorNode < handle
     end
     
     methods
-        function self = sensorNode(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
+        function self = sensorNodeLaser(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;
             self.baseTemp = Temp ;
             % create instance of temp sensor
-            self.tempSensor = HDC2010YPAR(Temp) ;
+            self.tempSensor = MLX90614(Temp) ;
             % get price of sensor network
             self.price = self.tempSensor.price + 300 ; % 300 is random
             % set battery vars
@@ -45,10 +45,12 @@ classdef sensorNode < handle
             self.forestState = 0;
             self.forestStatePrev = self.forestState ;
         end
-        
-        function updateTemp(self,Temp)
+        function range = getRange(self)
+            range = self.tempSensor.range ;
+        end        
+        function updateTemp(self,Temp,Tcenter)
             % update all sensor variables based on sensor data
-            self.tempSensor.getTemp(Temp);
+            self.tempSensor.getTemp(Temp,Tcenter);
         end
         
         function status = somethingToSay(self,tick)
@@ -68,7 +70,7 @@ classdef sensorNode < handle
         function updateState(self)
             % check if the state should be alive
             % if temperature > maxWorkT
-            temp = self.tempSensor.temp ;
+            temp = self.tempSensor.ownTemp ;
             if temp > self.maxWorkT 
                 self.state = 0 ;
             end
@@ -89,9 +91,9 @@ classdef sensorNode < handle
             temp = self.tempSensor.temp ;
         end 
         
-        function updateForestState(self, temp)
+        function updateForestState(self, temp,Tcenter)
             if self.state == 1
-                self.updateTemp(temp);
+                self.updateTemp(temp,Tcenter);
                 self.updateState();
             end
             if self.state == 1 
