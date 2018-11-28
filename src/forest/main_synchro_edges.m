@@ -216,7 +216,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
         ax5 = subplot(4,3,[8 11]);
         imagesc(est_temp_from_sensors);
         title(ax5, 'reconstructed temperature')
-        caxis(ax5, [0 400]);
+        caxis(ax5, [0 200]);
         colormap(gca, jet(64));
         cbh5 = colorbar;
         title(cbh5, 'temperature[ºC]')
