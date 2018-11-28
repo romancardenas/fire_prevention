@@ -1,4 +1,4 @@
-classdef sensorNode < handle
+classdef sensorNodeLaser < handle
     
     properties (Access = private) % only access if sensor is alive
         battery 
@@ -27,7 +27,7 @@ classdef sensorNode < handle
     end
     
     methods
-        function self = sensorNode(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
+        function self = sensorNodeLaser(Y,X,Temp,BattCap,SamplingCost,SendingCost,ListenCost, manWindow) % constructor
             self.state = 1 ; % alive
             self.X = X ;
             self.Y = Y ;

@@ -25,7 +25,8 @@ EPSILON = 0.05 ;
 
 PROCESS_COST_ACT = 5 * 5.2e-3 ; % energy needed for active mode (mAh)
 PROCESS_COST_IDLE = 5 * 1.2e-3 ; % energy needed for idle mode (mAh)
-SAMPLING_COST = (4*5 * 1e-3) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
+SAMPLING_COST_SENSOR = (4*5 * 1.2e-3) + PROCESS_COST_ACT ; 
+SAMPLING_COST_LASER = (4*5 * 1e-3) + PROCESS_COST_ACT;  % mAh needed for sampling and processing temperature
 SEND_COST_5 = (3.3 * 121e-3) +  PROCESS_COST_ACT;  % mAh needed for sending information at 5 km
 LISTEN_COST = (3.3 * 2.8e-3) + PROCESS_COST_IDLE ;  % mAh needed for listening
 
