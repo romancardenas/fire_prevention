@@ -59,8 +59,8 @@ for q=1:times
     world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
     % create sensor arrays
-    sensors_sync = sensors_create(SZ, NR_SENSORS, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
-    sensors_async = sensors_create(SZ, NR_SENSORS, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+    sensors_sync = main_sensors_create(SZ, NR_SENSORS, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+    sensors_async = main_sensors_create(SZ, NR_SENSORS, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
     
     out = 0;
     
@@ -80,7 +80,7 @@ for q=1:times
         % synchronous sensors
         if sync_flag == 0
             if ((mod(i-1, MANDATORY_WINDOW) == 0) || (mod(i-1, OPTIONAL_WINDOW) == 0))
-                sensors_sync = sensor_step(sensors_sync, world_temp);
+                sensors_sync = main_sensor_step(sensors_sync, world_temp);
                 for row =1:NR_SENSORS(1)
                     for col = 1:NR_SENSORS(2)
                         Xsens = sensors_sync{row,col}.X ;
@@ -100,7 +100,7 @@ for q=1:times
         end
         % asynchronous sensors
         if async_flag == 0
-            sensors_async = sensor_step(sensors_async, world_temp);
+            sensors_async = main_sensor_step(sensors_async, world_temp);
             for row =1:NR_SENSORS(1)
                 for col = 1:NR_SENSORS(2)
                     Xsens = sensors_async{row,col}.X ;

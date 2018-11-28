@@ -1,4 +1,4 @@
-function n_world_sensor = sensor_step(world_sensor, world_temp)
+function n_world_sensor = main_sensor_step(world_sensor, world_temp)
 %SENSOR_STEP Summary of this function goes here
 %   Detailed explanation goes here
 % update temperature for sensors

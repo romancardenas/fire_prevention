@@ -107,7 +107,7 @@ world_tree = fire_start(world_tree, N_FIRES);
 world_temp = ones(SZ(1), SZ(2)) * IDLE_TEMP;
 
 % create sensor array 
-world_sensor = sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
+world_sensor = main_sensors_create(SZ, NR_SENSOR, IDLE_TEMP, BATTERY_CAP, SAMPLING_COST, SEND_COST, LISTEN_COST, MANDATORY_WINDOW);
 final_nsensors = numel(world_sensor);
 
 temp_from_sensors = zeros(size(world_sensor));
@@ -124,7 +124,7 @@ for i=1:SIM_LENGTH % replace with SIM_LENGTH
     XtreesBurned(i)= TreesBurned(world_tree);
     XpriceTree(i) = XtreesBurned(i) * TREE_COST;
     if ((mod(i-1, MANDATORY_WINDOW) == 0) || (mod(i-1, OPTIONAL_WINDOW) == 0))
-        world_sensor = sensor_step(world_sensor, world_temp);
+        world_sensor = main_sensor_step(world_sensor, world_temp);
         temp_from_sensors = mesh_forest(world_sensor, 1, MAX_JUMPS, i-1);
         [est_temp_from_sensors, prev_temp_from_sensors] = temp_reconstruct(temp_from_sensors, prev_temp_from_sensors, SZ(1), SZ(2));
         
