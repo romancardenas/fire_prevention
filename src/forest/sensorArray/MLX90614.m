@@ -7,7 +7,7 @@ classdef MLX90614 < handle
     end 
     
     properties (Constant)
-        Terror = 0.2 
+        Terror = 0.5 
         price = 384  
     end
     
